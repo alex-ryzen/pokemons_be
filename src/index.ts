@@ -1,11 +1,8 @@
-// index.ts
-import express from "express";
+// index.ts - entry point with .env load and app initialization
+import dotenv from "dotenv"
+dotenv.config();
 
-const app = express();
-const port = "3000";
-
-app.get("/", );
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+// app init
+import App from "./app";
+const app = new App;
+app.run();
