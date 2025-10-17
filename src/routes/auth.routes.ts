@@ -23,7 +23,7 @@ class AuthRouter extends BaseRouter {
                 middlewares: [
                     validate(authSchema.register)
                 ],
-                handler: AuthController.register
+                handler: AuthController.re
             },
             {
                 // logout
@@ -31,7 +31,7 @@ class AuthRouter extends BaseRouter {
                 path: "/logout",
                 middlewares: [
                     // check if user is logged in
-                    AuthMiddleware.authenticateUser
+                    AuthMiddleware.authenticate
                 ],
                 handler: AuthController.logout
             },
@@ -40,10 +40,7 @@ class AuthRouter extends BaseRouter {
                 // refresh token
                 method: "post",
                 path: "/refresh-token",
-                middlewares: [
-                    // checks if refresh token is valid
-                    AuthMiddleware.refreshTokenValidation
-                ],
+                middlewares: [],
                 handler: AuthController.refreshToken
             },
         ]

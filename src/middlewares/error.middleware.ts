@@ -3,23 +3,18 @@ import { ApiError } from "../errors/ApiError";
 import { ZodError } from "zod";
 
 
-interface ErrorHandlerArgs {
+type ErrorHandlerAliace = ( 
     err: ApiError | ZodError | Error,
     req: Request,
     res: Response,
     next: NextFunction
-}
+) => Response<any, Record<string, any>>
 
-export const errorMiddleware = (
-    err: Error | ApiError | ZodError,
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const errorMiddleware: ErrorHandlerAliace = (err, req, res, next) => {
     console.error('[ErrorMiddleware]:', err);
 
     if (err instanceof ApiError) {
-        return res.status(err.status).json({
+        return res.status(err.status!).json({
             message: err.message,
             errors: err.errors
         });

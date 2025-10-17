@@ -1,13 +1,13 @@
 import authConfig from "../config/auth.config";
 import { ApiError } from "../errors/ApiError";
-import Send from "../utils/response.utils";
+import authService from "../services/auth-service";
 import { type NextFunction, type Request, type Response } from "express";
 import jwt from "jsonwebtoken";
 
 export interface DTO { // DecodedToken
-    username: string;
-    userId: number;
-    playerId: number;
+    username: string,
+    userId: number,
+    playerId: number,
 }
 
 class AuthMiddleware {
@@ -15,53 +15,24 @@ class AuthMiddleware {
      * Middleware to authenticate the user based on the access token stored in the HttpOnly cookie.
      * This middleware will verify the access token and attach the user information to the request object.
      */
-    static authenticateUser = (req: Request, res: Response, next: NextFunction) => {
-        // 1. Extract the access token from the HttpOnly cookie or "Authorization" header as "Bearer <token>"
-        const token = req.cookies.accessToken || req.headers.authorization?.split(' ')[1];
-        if (!token) {
-            return next(ApiError.Unauthorized);  // Sends 401 Unauthorized if token is missing
-        }
-
+    static authenticate = (req: Request, res: Response, next: NextFunction) => {
         try {
-            // 2. Verify the token using the secret from the auth config
-            const decodedToken = jwt.verify(token, authConfig.access_secret) as DTO ; // Type assertion for better type safety
-
-            // If the token is valid, attach user information to the request object
-            (req as any).userId = decodedToken.userId; // Attach userId to the request object
-
-            // Proceed to the next middleware or route handler
+            // Extract the access token from the HttpOnly cookie or "Authorization" header as "Bearer <token>"
+            const token: string = req.cookies.accessToken || req.headers.authorization?.split(' ')[1];
+            if (!token || (req.headers.authorization?.split(' ')[0] != "Bearer")) {
+                throw ApiError.Unauthorized();
+            }
+            else {
+                const userData = authService.validateAccessToken(token)
+                if (!userData) {
+                    throw ApiError.Unauthorized();
+                }
+                req.user = userData
+                next()
+            }
             next();
         } catch (error) {
-            // If the token verification fails (invalid or expired token), return an error
-            console.error("Authentication failed:", error);  // Log error for debugging
-            return Send.unauthorized(res, null);  // Sends 401 Unauthorized if token is invalid or expired
-        }
-    };
-
-    static refreshTokenValidation = (req: Request, res: Response, next: NextFunction) => {
-        // 1. Extract the refresh token from the HttpOnly cookie
-        const refreshToken = req.cookies.refreshToken;
-
-        // If there's no refresh token, return an error
-        if (!refreshToken) {
-            return Send.unauthorized(res, { message: "No refresh token provided" });
-        }
-
-        try {
-            // 2. Verify the refresh token using the secret from the auth config
-            const decodedToken = jwt.verify(refreshToken, authConfig.refresh_secret) as { userId: number };
-
-            // If the token is valid, attach user information to the request object
-            (req as any).userId = decodedToken.userId;
-
-            // Proceed to the next middleware or route handler
-            next();
-        } catch (error) {
-            // Handle token verification errors (invalid or expired token)
-            console.error("Refresh Token authentication failed:", error);
-
-            // Return a 401 Unauthorized with a more specific message
-            return Send.unauthorized(res, { message: "Invalid or expired refresh token" });
+            throw ApiError.Unauthorized();
         }
     };
 }
