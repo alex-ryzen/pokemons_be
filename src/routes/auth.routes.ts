@@ -3,13 +3,14 @@ import BaseRouter, { type RouteConfig } from "./router";
 import { validate } from "../middlewares/validation.middleware";
 import authSchema from "../validations/auth.schema";
 import AuthMiddleware from "../middlewares/auth.middleware";
+import { RouteMethods } from "./router";
 
 class AuthRouter extends BaseRouter {
     protected routes(): RouteConfig[] {
         return [
             {
                 // login
-                method: "post",
+                method: RouteMethods.post,
                 path: "/login",
                 middlewares: [
                     validate(authSchema.login)
@@ -18,30 +19,29 @@ class AuthRouter extends BaseRouter {
             },
             {
                 // register
-                method: "post",
+                method: RouteMethods.post,
                 path: "/register",
                 middlewares: [
                     validate(authSchema.register)
                 ],
-                handler: AuthController.re
+                handler: AuthController.registration
             },
             {
                 // logout
-                method: "post",
+                method: RouteMethods.post,
                 path: "/logout",
                 middlewares: [
-                    // check if user is logged in
-                    AuthMiddleware.authenticate
+                    AuthMiddleware.authenticate // check if user is logged in
                 ],
                 handler: AuthController.logout
             },
 
             {
                 // refresh token
-                method: "post",
+                method: RouteMethods.post,
                 path: "/refresh-token",
                 middlewares: [],
-                handler: AuthController.refreshToken
+                handler: AuthController.refresh
             },
         ]
     }

@@ -49,27 +49,27 @@ export class PlayersPokemon extends Model<PlayersPokemonAttributes, PlayersPokem
                 pokemon_id: {
                     type: DataTypes.INTEGER,
                     allowNull: true,
-                    references: { model: 'Pokemon', key: 'id' },
+                    //references: { model: 'Pokemon', key: 'id' },
                 },
                 player_id: {
                     type: DataTypes.INTEGER,
                     allowNull: true,
-                    references: { model: 'Player', key: 'id' },
+                    //references: { model: 'Player', key: 'id' },
                 },
                 name: {
                     type: DataTypes.STRING(255),
                     allowNull: true,
                 },
                 weight: {
-                    type: DataTypes.DECIMAL(8, 2),
+                    type: DataTypes.DECIMAL(10, 2),
                     allowNull: true,
                 },
                 income: {
-                    type: DataTypes.DECIMAL(12, 2),
+                    type: DataTypes.DECIMAL(14, 2),
                     allowNull: true,
                 },
                 summary: {
-                    type: DataTypes.DECIMAL(24, 2),
+                    type: DataTypes.DECIMAL(26, 2),
                     allowNull: true,
                 },
                 age: {

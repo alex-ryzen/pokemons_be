@@ -41,12 +41,12 @@ export class ActiveGardenService extends Model<ActiveGardenServiceAttributes, Ac
                 garden_id: {
                     type: DataTypes.INTEGER,
                     allowNull: true,
-                    references: { model: 'Garden', key: 'id' },
+                    //references: { model: 'Garden', key: 'id' },
                 },
                 garden_service_id: {
                     type: DataTypes.INTEGER,
                     allowNull: true,
-                    references: { model: 'GardenService', key: 'id' },
+                    //references: { model: 'GardenService', key: 'id' },
                 },
                 start: {
                     type: DataTypes.DATE,

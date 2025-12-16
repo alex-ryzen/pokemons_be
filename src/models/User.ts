@@ -1,6 +1,5 @@
 import { Model, DataTypes, Sequelize, type Optional, Association, type NonAttribute } from 'sequelize';
 import {v4 as uuid} from "uuid"
-import type models from '../db';
 import type { Player } from './Player';
 
 export interface UserAttributes {
@@ -11,6 +10,7 @@ export interface UserAttributes {
     email?: string;
     password?: string;
     image?: string;
+    role?: string;
 }
 
 export interface UserCreationAttributes extends Optional<UserAttributes, 'id'> { }
@@ -23,6 +23,7 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
     declare email?: string;
     declare password?: string;
     declare image?: string;
+    declare role?: string;
 
     declare readonly createdAt: Date;
     declare readonly updatedAt: Date;
@@ -45,7 +46,6 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
                 uuid: {
                     type: DataTypes.UUID,
                     allowNull: true,
-                    defaultValue: uuid(),
                     unique: true,
                 },
                 username: {
@@ -70,6 +70,11 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
                     allowNull: true,
                     defaultValue: ""
                 },
+                role: {
+                    type: DataTypes.STRING(127),
+                    allowNull: true,
+                    defaultValue: "user"
+                }
             },
             {
                 sequelize,

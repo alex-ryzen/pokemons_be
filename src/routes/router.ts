@@ -2,7 +2,17 @@ import { Router, type RequestHandler, type IRouterMatcher } from "express";
 //import { METHODS } from "http";
 
 // Define the possible HTTP methods for routes
-type RouteMethod = "get" | "post" | "put" | "delete" | "patch" | "options" | "head";
+// export type RouteMethod = "get" | "post" | "put" | "delete" | "patch" | "options" | "head";
+export const RouteMethods = {
+    get: "get",
+    post: "post",
+    put: "put",
+    delete: "delete",
+    patch: "patch",
+    options: "options",
+    head: "head"
+} as const;
+export type RouteMethod = (typeof RouteMethods)[keyof typeof RouteMethods];
 //type RouteMethod = Lowercase<typeof METHODS[number]>
 
 // Interface to describe the configuration of each route
@@ -18,8 +28,11 @@ export default abstract class BaseRouter {
     public router: Router;
 
     // Constructor that initializes the router
-    constructor() {
+    constructor(generalMiddlewares?: RequestHandler[]) {
         this.router = Router();  // Create a new Express Router instance
+        generalMiddlewares?.map((gm) => {
+            this.router.use(gm)
+        })
         this.registerRoutes();   // Register routes when the instance is created
     }
 

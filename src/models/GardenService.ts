@@ -5,10 +5,10 @@ import type { ActiveGardenService } from "./ActiveGardenService";
 export interface GardenServiceAttributes {
     id: number;
     title?: string;
-    price?: number;
+    price?: string;
     category?: string;
     int_value?: number;
-    percent_value?: number;
+    percent_value?: string;
     duration?: string;
 }
 
@@ -18,10 +18,10 @@ export interface GardenServiceCreationAttributes
 export class GardenService extends Model<GardenServiceAttributes, GardenServiceCreationAttributes> implements GardenServiceAttributes {
     declare id: number;
     declare title?: string;
-    declare price?: number;
+    declare price?: string;
     declare category?: string;
     declare int_value?: number;
-    declare percent_value?: number;
+    declare percent_value?: string;
     declare duration?: string;
 
     declare readonly createdAt: Date;
@@ -46,7 +46,7 @@ export class GardenService extends Model<GardenServiceAttributes, GardenServiceC
                     allowNull: true,
                 },
                 price: {
-                    type: DataTypes.DECIMAL(12, 2),
+                    type: DataTypes.DECIMAL(14, 2),
                     allowNull: true,
                 },
                 category: {
@@ -59,7 +59,7 @@ export class GardenService extends Model<GardenServiceAttributes, GardenServiceC
                     defaultValue: 0,
                 },
                 percent_value: {
-                    type: DataTypes.DECIMAL(2, 2),
+                    type: DataTypes.DECIMAL(4, 2),
                     allowNull: true,
                     defaultValue: 0,
                 },

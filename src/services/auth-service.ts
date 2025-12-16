@@ -16,16 +16,16 @@ class AuthService {
         const { body: { login, password } } = data
         const user = await User.findOne({
             where: {
-                [Op.or]: [{ email: login.identifier }, { username: login.identifier }]
+                [Op.or]: [{ email: login}, { username: login }]
             },
             include: Player,
         })
         if (!user) {
-            throw new ApiError(500, "Invalid credentials")
+            throw new ApiError(401, "Invalid credentials")
         }
         const isPasswordValid = await bcrypt.compare(password, user.password!);
         if (!isPasswordValid) {
-            throw new ApiError(500, "Invalid credentials")
+            throw new ApiError(401, "Wrong password")
         }
         const payload: DTO = { username: user.username!, userId: user.id, playerId: user.player?.id! }
         const { accessToken, refreshToken } = this.generateTokens(payload)
@@ -55,7 +55,9 @@ class AuthService {
 
         const hashPassword = await bcrypt.hash(password, 12);
         const user = await User.create({ uuid: v4(), username, email, password: hashPassword })
-
+        //todo
+        const player = await Player.create({user_id: user.id, balance: "0.00", total_income: "0.00", })
+        
         const payload: DTO = { username: user.username!, userId: user.id, playerId: user.player?.id! }
         const { accessToken, refreshToken } = this.generateTokens(payload)
         await this.saveToken(user.id, refreshToken)
@@ -91,7 +93,7 @@ class AuthService {
         return jwt.sign(
             payload,
             authConfig.access_secret!,
-            { expiresIn: authConfig.access_expires_in!, algorithm: 'ES256' }
+            { expiresIn: authConfig.access_expires_in!, algorithm: 'HS256' }
         );
     }
 
@@ -99,7 +101,7 @@ class AuthService {
         return jwt.sign(
             payload,
             authConfig.refresh_secret!,
-            { expiresIn: authConfig.refresh_expires_in!, algorithm: 'ES256' }
+            { expiresIn: authConfig.refresh_expires_in!, algorithm: 'HS256' }
         );
     }
 

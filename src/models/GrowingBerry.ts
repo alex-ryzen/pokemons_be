@@ -51,12 +51,12 @@ export class GrowingBerry extends Model<GrowingBerryAttributes, GrowingBerryCrea
                 garden_id: {
                     type: DataTypes.INTEGER,
                     allowNull: true,
-                    references: { model: 'Garden', key: 'id' },
+                    //references: { model: 'Garden', key: 'id' },
                 },
                 berry_id: {
                     type: DataTypes.INTEGER,
                     allowNull: true,
-                    references: { model: 'Berry', key: 'id' },
+                    //references: { model: 'Berry', key: 'id' },
                 },
                 status: {
                     type: DataTypes.STRING(63),

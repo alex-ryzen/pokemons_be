@@ -6,8 +6,8 @@ export interface PokemonAttributes {
     id: number;
     species?: string;
     image?: string;
-    def_weight?: number;
-    def_income?: number;
+    def_weight?: string;
+    def_income?: string;
     base_experience?: number;
     pokeapi_url?: string;
 }
@@ -18,8 +18,8 @@ export class Pokemon extends Model<PokemonAttributes, PokemonCreationAttributes>
     declare id: number;
     declare species?: string;
     declare image?: string;
-    declare def_weight?: number;
-    declare def_income?: number;
+    declare def_weight?: string;
+    declare def_income?: string;
     declare base_experience?: number;
     declare pokeapi_url?: string;
 
@@ -49,11 +49,11 @@ export class Pokemon extends Model<PokemonAttributes, PokemonCreationAttributes>
                     allowNull: true,
                 },
                 def_weight: {
-                    type: DataTypes.DECIMAL(8, 2),
+                    type: DataTypes.DECIMAL(10, 2),
                     allowNull: true,
                 },
                 def_income: {
-                    type: DataTypes.DECIMAL(12, 2),
+                    type: DataTypes.DECIMAL(14, 2),
                     allowNull: true,
                 },
                 base_experience: {

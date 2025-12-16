@@ -12,14 +12,9 @@ export type RegisterDataType = z.infer<typeof authSchema.register>
 class AuthController {
     static login = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const data: LoginDataType = req.body;
+            const data: LoginDataType = {body: req.body};
             const {username, accessToken, refreshToken} = await AuthService.login(data)
-            // res.cookie("accessToken", accessToken, {
-            //         httpOnly: true,   // Ensure the cookie cannot be accessed via JavaScript (security against XSS attacks)
-            //         secure: process.env.NODE_ENV === "production",  // Set to true in production for HTTPS-only cookies
-            //         maxAge: 15 * 60 * 1000,  // 15 minutes in mileseconds
-            //         sameSite: "strict"  // Ensures the cookie is sent only with requests from the same site
-            // });
+            
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
@@ -34,7 +29,7 @@ class AuthController {
     
     static registration = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const data: RegisterDataType = req.body;
+            const data: RegisterDataType = {body: req.body};
             const {username, accessToken, refreshToken} = await AuthService.registration(data)
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: true,
@@ -69,87 +64,13 @@ class AuthController {
         }
     }
 
-    // async activate(req, res, next) {
-    //     try {
-    //         const activationLink = req.params.link;
-    //         await userService.activate(activationLink);
-    //         return res.redirect(process.env.CLIENT_URL);
-    //     } catch (e) {
-    //         next(e);
-    //     }
-    // }
-
-
-    // static logout = async (req: Request, res: Response) => {
-    //     try {
-    //         // 1. We will ensure the user is authenticated before running this controller
-    //         //    The authentication check will be done in the middleware (see auth.routes.ts).
-    //         //    The middleware will check the presence of a valid access token in the cookies.
-
-    //         // 2. Remove the refresh token from the database (optional, if using refresh tokens)
-    //         const userId = (req as any).user?.userId;  // Assumed that user data is added by the middleware
-    //         if (userId) {
-    //             await prisma.user.update({
-    //                 where: { id: userId },
-    //                 data: { refreshToken: null }  // Clear the refresh token from the database
-    //             });
-    //         }
-
-    //         // 3. Remove the access and refresh token cookies
-    //         // We clear both cookies here (accessToken and refreshToken)
-    //         res.clearCookie("accessToken");
-    //         res.clearCookie("refreshToken");
-
-    //         // 4. Send success response after logout
-    //         return Send.success(res, null, "Logged out successfully.");
-
-    //     } catch (error) {
-    //         // 5. If an error occurs, return an error response
-    //         console.error("Logout failed:", error); // Log the error for debugging
-    //         return Send.error(res, null, "Logout failed.");
-    //     }
-    // }
-    // static refreshToken = async (req: Request, res: Response) => {
-    //     try {
-    //         const userId = (req as any).userId;  // Get userId from the refreshTokenValidation middleware
-    //         const refreshToken = req.cookies.refreshToken;  // Get the refresh token from cookies
-
-    //         // Check if the refresh token has been revoked
-    //         const user = await prisma.user.findUnique({
-    //             where: { id: userId }
-    //         });
-
-    //         if (!user || !user.refreshToken) {
-    //             return Send.unauthorized(res, "Refresh token not found");
-    //         }
-
-    //         // Check if the refresh token in the database matches the one from the client
-    //         if (user.refreshToken !== refreshToken) {
-    //             return Send.unauthorized(res, { message: "Invalid refresh token" });
-    //         }
-
-    //         // Generate a new access token
-    //         const newAccessToken = jwt.sign(
-    //             { userId: user.id },
-    //             authConfig.secret,
-    //             { expiresIn: authConfig.secret_expires_in as any }
-    //         );
-
-    //         // Send the new access token in the response
-    //         res.cookie("accessToken", newAccessToken, {
-    //             httpOnly: true,
-    //             secure: process.env.NODE_ENV === "production",
-    //             maxAge: 15 * 60 * 1000,  // 15 minutes
-    //             sameSite: "strict"
-    //         });
-
-    //         return Send.success(res, { message: "Access token refreshed successfully" });
-
-    //     } catch (error) {
-    //         console.error("Refresh Token failed:", error);
-    //         return Send.error(res, null, "Failed to refresh token");
-    //     }
-    //}
 }
 
 export default AuthController;
+
+// res.cookie("accessToken", accessToken, {
+//         httpOnly: true,   // Ensure the cookie cannot be accessed via JavaScript (security against XSS attacks)
+//         secure: process.env.NODE_ENV === "production",  // Set to true in production for HTTPS-only cookies
+//         maxAge: 15 * 60 * 1000,  // 15 minutes in mileseconds
+//         sameSite: "strict"  // Ensures the cookie is sent only with requests from the same site
+// });

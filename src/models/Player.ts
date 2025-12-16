@@ -2,16 +2,17 @@ import { Model, DataTypes, Sequelize, type Optional, type NonAttribute, Associat
 import type models from '../db';
 import type { User } from './User';
 import type { PlayersPokemon } from './PlayersPokemon';
-import type { Inventory } from './Inventory';
+import type { InventoryItem } from './InventoryItem';
 import type { Garden } from './Garden';
 
 export interface PlayerAttributes {
     id: number;
     user_id?: number;
-    balance?: number;
-    individual_factor?: number;
+    balance?: string;
+    total_income?: string;
+    individual_factor?: string;
     inventory_size?: number;
-    inv_ext_price?: number;
+    inv_ext_price?: string;
 }
 
 export interface PlayerCreationAttributes extends Optional<PlayerAttributes, 'id'> { }
@@ -19,23 +20,24 @@ export interface PlayerCreationAttributes extends Optional<PlayerAttributes, 'id
 export class Player extends Model<PlayerAttributes, PlayerCreationAttributes> implements PlayerAttributes {
     declare id: number;
     declare user_id?: number;
-    declare balance?: number;
-    declare individual_factor?: number;
+    declare balance?: string;
+    declare total_income?: string;
+    declare individual_factor?: string;
     declare inventory_size?: number;
-    declare inv_ext_price?: number;
+    declare inv_ext_price?: string;
 
     declare readonly createdAt: Date;
     declare readonly updatedAt: Date;
 
     declare user?: NonAttribute<User>;
     declare playersPokemon?: NonAttribute<PlayersPokemon[]>;
-    declare inventory?: NonAttribute<Inventory[]>;
+    declare inventory?: NonAttribute<InventoryItem[]>;
     declare garden?: NonAttribute<Garden>;
 
     declare static associations: {
         user: Association<Player, User>;
         playersPokemon: Association<Player, PlayersPokemon>;
-        inventory: Association<Player, Inventory>;
+        inventory: Association<Player, InventoryItem>;
         garden: Association<Player, Garden>;
     };
 
@@ -51,16 +53,21 @@ export class Player extends Model<PlayerAttributes, PlayerCreationAttributes> im
                 user_id: {
                     type: DataTypes.INTEGER,
                     allowNull: true,
-                    references: { model: 'user', key: 'id' },
+                    //references: { model: 'user', key: 'id' },
                     onDelete: 'CASCADE',
                     onUpdate: 'NO ACTION',
                 },
                 balance: {
-                    type: DataTypes.DECIMAL(24, 2),
+                    type: DataTypes.DECIMAL(26, 2),
                     allowNull: true,
                 },
+                total_income: {
+                    type: DataTypes.DECIMAL(22, 2),
+                    allowNull: true,
+                    defaultValue: "0.00"
+                },
                 individual_factor: {
-                    type: DataTypes.DECIMAL(4, 4),
+                    type: DataTypes.DECIMAL(6, 4),
                     allowNull: true,
                 },
                 inventory_size: {
@@ -68,7 +75,7 @@ export class Player extends Model<PlayerAttributes, PlayerCreationAttributes> im
                     allowNull: true,
                 },
                 inv_ext_price: {
-                    type: DataTypes.DECIMAL(12, 2),
+                    type: DataTypes.DECIMAL(14, 2),
                     allowNull: true,
                 },
             },

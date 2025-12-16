@@ -29,12 +29,12 @@ export class Token extends Model<TokenAttributes, TokenCreationAttributes> imple
                 user_id: {
                     type: DataTypes.INTEGER,
                     allowNull: true,
-                    references: { model: 'User', key: 'id' },
+                    //references: { model: 'User', key: 'id' },
                     onDelete: 'CASCADE',
                     onUpdate: 'NO ACTION',
                 },
                 refresh_token: {
-                    type: DataTypes.DECIMAL(24, 2),
+                    type: DataTypes.STRING(512),
                     allowNull: true,
                 },
             },

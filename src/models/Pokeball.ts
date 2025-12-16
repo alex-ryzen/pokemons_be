@@ -5,9 +5,9 @@ export interface PokeballAttributes {
     name?: string;
     category?: string;
     image?: string;
-    price?: number;
+    price?: string;
     level?: number;
-    chance?: number;
+    chance?: string;
     pokeapi_url?: string;
 }
 
@@ -18,9 +18,9 @@ export class Pokeball extends Model<PokeballAttributes, PokeballCreationAttribut
     declare name?: string;
     declare category?: string;
     declare image?: string;
-    declare price?: number;
+    declare price?: string;
     declare level?: number;
-    declare chance?: number;
+    declare chance?: string;
     declare pokeapi_url?: string;
 
     declare readonly createdAt: Date;
@@ -49,7 +49,7 @@ export class Pokeball extends Model<PokeballAttributes, PokeballCreationAttribut
                     allowNull: true,
                 },
                 price: {
-                    type: DataTypes.DECIMAL(12, 2),
+                    type: DataTypes.DECIMAL(14, 2),
                     allowNull: true,
                 },
                 level: {
@@ -57,7 +57,7 @@ export class Pokeball extends Model<PokeballAttributes, PokeballCreationAttribut
                     allowNull: true,
                 },
                 chance: {
-                    type: DataTypes.DECIMAL(2, 2),
+                    type: DataTypes.DECIMAL(4, 2),
                     allowNull: true,
                 },
                 pokeapi_url: {

@@ -2,13 +2,19 @@ import { Model, DataTypes, Sequelize, type Optional, type NonAttribute, Associat
 import type models from '../db';
 import type { GrowingBerry } from './GrowingBerry';
 
+export const Sizes = {
+    max: 300,
+    min: 20
+} as const
+
 export interface BerryAttributes {
     id: number;
     name?: string;
     category?: string;
     image?: string;
-    price?: number;
+    price?: string;
     level?: number;
+    isGrown?: boolean;
     power?: number;
     growth_time?: number;
     max_harvest?: number;
@@ -25,7 +31,7 @@ export class Berry extends Model<BerryAttributes, BerryCreationAttributes> imple
     declare name?: string;
     declare category?: string;
     declare image?: string;
-    declare price?: number;
+    declare price?: string;
     declare level?: number;
     declare power?: number;
     declare growth_time?: number;
@@ -66,7 +72,7 @@ export class Berry extends Model<BerryAttributes, BerryCreationAttributes> imple
                     allowNull: true,
                 },
                 price: {
-                    type: DataTypes.DECIMAL(12, 2),
+                    type: DataTypes.DECIMAL(14, 2),
                     allowNull: true,
                 },
                 level: {

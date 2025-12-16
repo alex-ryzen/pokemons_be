@@ -8,7 +8,7 @@ export interface GardenAttributes {
     id: number;
     player_id?: number;
     garden_size?: number;
-    growth_speed?: number;
+    growth_speed?: string;
 }
 
 export interface GardenCreationAttributes extends Optional<GardenAttributes, 'id'> { }
@@ -17,7 +17,7 @@ export class Garden extends Model<GardenAttributes, GardenCreationAttributes> im
     declare id: number;
     declare player_id?: number;
     declare garden_size?: number;
-    declare growth_speed?: number;
+    declare growth_speed?: string;
 
     declare readonly createdAt: Date;
     declare readonly updatedAt: Date;
@@ -44,14 +44,14 @@ export class Garden extends Model<GardenAttributes, GardenCreationAttributes> im
                 player_id: {
                     type: DataTypes.INTEGER,
                     allowNull: true,
-                    references: { model: 'Player', key: 'id' },
+                    //references: { model: 'Player', key: 'id' },
                 },
                 garden_size: {
                     type: DataTypes.INTEGER,
                     allowNull: true,
                 },
                 growth_speed: {
-                    type: DataTypes.DECIMAL(2, 2),
+                    type: DataTypes.DECIMAL(4, 2),
                     allowNull: true,
                 },
             },

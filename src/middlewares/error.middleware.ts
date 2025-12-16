@@ -11,7 +11,7 @@ type ErrorHandlerAliace = (
 ) => Response<any, Record<string, any>>
 
 export const errorMiddleware: ErrorHandlerAliace = (err, req, res, next) => {
-    console.error('[ErrorMiddleware]:', err);
+    console.error('[ErrorMiddleware]:', err, "message: ", err.message);
 
     if (err instanceof ApiError) {
         return res.status(err.status!).json({
@@ -24,19 +24,12 @@ export const errorMiddleware: ErrorHandlerAliace = (err, req, res, next) => {
         return res.status(422).json({
             message: '<!> VALIDATION ERROR <!>',
             errors: err.issues.map(e => ({
-                field: e.path.join('.'),
-                message: e.message
+                path: e.path.join('.'),
+                message: e.message,
+                code: e.code
             }))
         });
     }
-
-    // const errorConfig = errorMap[err.name];
-    // if (errorConfig) {
-    //     return res.status(errorConfig.status).json({
-    //         message: errorConfig.message,
-    //         errors: err
-    //     });
-    // }
 
     if (err instanceof SyntaxError && 'body' in err) {
         return res.status(400).json({ message: 'Invalid JSON' });
