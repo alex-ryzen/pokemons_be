@@ -6,12 +6,14 @@ import type { ShopQueryData } from "../validations/shop.schema";
 
 class ShopService {
     async shopItems(query: ShopQueryData) {
+        console.log(query, query.filter.filterLists['product'])
         const priceWhere = handleSeqRange(query.filter.filterRanges['price']);
         const itemTypes = query.filter.filterLists['product'];
         const where = {
             ...(itemTypes?.length && itemTypes[0] !== 'null' ? { item_type: { [Op.in]: itemTypes } } : {}),
             ...(priceWhere ? { price: priceWhere } : {}),
         };
+        console.log("sort: ", query.sort, "where: ", where)
         const {rows, count} = await ShopProduct.findAndCountAll({
             attributes: {
                 exclude: ['createdAt', 'updatedAt'],
@@ -25,7 +27,7 @@ class ShopService {
         return {rows, count}
     }
     
-    async buyItem(player_id: number, item_id: number) {
+    async purchaseItem(player_id: number, item_id: number, item_type: string) {
         const player = await Player.findByPk(player_id, {attributes: ['balance']})
         //const item = await player?.balance
     }

@@ -9,6 +9,7 @@ import jwt from "jsonwebtoken";
 import type { DTO } from "../middlewares/auth.middleware";
 import { Token } from "../models/Token";
 import { v4 } from "uuid"
+import { Garden } from "../models/Garden";
 
 
 class AuthService {
@@ -28,12 +29,13 @@ class AuthService {
             throw new ApiError(401, "Wrong password")
         }
         const payload: DTO = { username: user.username!, userId: user.id, playerId: user.player?.id! }
-        const { accessToken, refreshToken } = this.generateTokens(payload)
+        const { accessToken, refreshToken, refresh_expires_in } = this.generateTokens(payload)
         await this.saveToken(user.id, refreshToken)
         return {
             username: payload.username,
             accessToken,
-            refreshToken
+            refreshToken,
+            refresh_expires_in
         }
     }
 
@@ -42,8 +44,8 @@ class AuthService {
         if (!userData) {
             throw ApiError.Unauthorized();
         }
-        const token = await this.removeToken(userData.userId);
-        return token;
+        const tokenIsDeleted = await this.removeToken(userData.userId);
+        return tokenIsDeleted;
     }
 
     async registration(data: RegisterDataType) {
@@ -55,16 +57,18 @@ class AuthService {
 
         const hashPassword = await bcrypt.hash(password, 12);
         const user = await User.create({ uuid: v4(), username, email, password: hashPassword })
-        //todo
-        const player = await Player.create({user_id: user.id, balance: "0.00", total_income: "0.00", })
+
+        const player = await Player.create({user_id: user.id, balance: "10000.00", total_income: "0.00", individual_factor: "1.00", inventory_size: 15, inv_ext_price: "1000.00"})
+        const garden = await Garden.create({player_id: player.id, garden_size: 25, growth_speed: "0.15"})
         
         const payload: DTO = { username: user.username!, userId: user.id, playerId: user.player?.id! }
-        const { accessToken, refreshToken } = this.generateTokens(payload)
+        const { accessToken, refreshToken, refresh_expires_in } = this.generateTokens(payload)
         await this.saveToken(user.id, refreshToken)
         return {
             username: payload.username,
             accessToken,
-            refreshToken
+            refreshToken,
+            refresh_expires_in
         }
     }
 
@@ -73,13 +77,14 @@ class AuthService {
             throw ApiError.Unauthorized();
         }
         const userData = this.validateRefreshToken(refreshToken);
-        const tokenFromDb = await this.findToken(userData?.userId!);
-        if (!userData || !tokenFromDb) {
-            throw ApiError.Unauthorized();
+        if (!userData) {
+            const decoded_id = (jwt.decode(refreshToken) as DTO).userId
+            const tokenIsDeleted = await this.removeToken(decoded_id);
+            throw ApiError.Unauthorized(`Refresh token has been expired and has been deleted (${tokenIsDeleted})`);
         }
         const user = await User.findByPk(userData.userId);
         if (!user) {
-            throw ApiError.BadRequest("Token payload error :(");
+            throw ApiError.Unauthorized("Token payload error :(");
         }
         const payload: DTO = { username: user.username!, userId: user.id, playerId: user.player?.id! }
         const accessToken = this.generateAccessToken(payload)
@@ -108,9 +113,11 @@ class AuthService {
     generateTokens(payload: DTO) {
         const accessToken = this.generateAccessToken(payload)
         const refreshToken = this.generateRefreshToken(payload)
+        const refresh_expires_in = this.getExpiresAtFromToken(refreshToken)
         return {
             accessToken,
-            refreshToken
+            refreshToken,
+            refresh_expires_in
         }
     }
 
@@ -132,19 +139,26 @@ class AuthService {
         }
     }
 
+    getExpiresAtFromToken(token: string): Date {
+        const decoded = jwt.decode(token) as { exp: number };
+        return new Date(decoded.exp * 1000);
+    }
+
     async saveToken(userId: number, refreshToken: string) {
+        const expiresIn = this.getExpiresAtFromToken(refreshToken);
         const tokenData = await Token.findOne({ where: { user_id: userId } })
         if (tokenData) {
             tokenData.refresh_token = refreshToken;
+            tokenData.expires_in = expiresIn
             return await tokenData.save();
         }
-        const token = await Token.create({ user_id: userId, refresh_token: refreshToken })
+        const token = await Token.create({ user_id: userId, refresh_token: refreshToken, expires_in: expiresIn })
         return token;
     }
 
     async removeToken(userId: number) {
-        const tokenData = await Token.destroy({ where: { user_id: userId } })
-        return tokenData;
+        const tokenIsDeleted = await Token.destroy({ where: { user_id: userId } })
+        return tokenIsDeleted;
     }
 
     async findToken(userId: number) {

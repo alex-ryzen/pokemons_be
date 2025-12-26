@@ -5,6 +5,7 @@ export interface TokenAttributes {
     id: number;
     user_id?: number;
     refresh_token?: string;
+    expires_in?: Date;
 }
 
 export interface TokenCreationAttributes extends Optional<TokenAttributes, 'id'> { }
@@ -13,6 +14,7 @@ export class Token extends Model<TokenAttributes, TokenCreationAttributes> imple
     declare id: number;
     declare user_id?: number;
     declare refresh_token?: string;
+    declare expires_in?: Date;
 
     declare readonly createdAt: Date;
     declare readonly updatedAt: Date;
@@ -37,6 +39,10 @@ export class Token extends Model<TokenAttributes, TokenCreationAttributes> imple
                     type: DataTypes.STRING(512),
                     allowNull: true,
                 },
+                expires_in: {
+                    type: DataTypes.DATE,
+                    allowNull: false,
+                }
             },
             {
                 sequelize,

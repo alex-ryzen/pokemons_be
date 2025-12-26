@@ -11,6 +11,10 @@ import { absPath } from ".";
 import { runFabrics } from "./fabrics";
 import shopRoutes from "./routes/shop.routes";
 import { errorMiddleware } from "./middlewares/error.middleware";
+import userRoutes from "./routes/user.routes";
+import inventoryRoutes from "./routes/inventory.routes";
+import gardenRoutes from "./routes/garden.routes";
+import pokemonRoutes from "./routes/pokemon.routes";
 
 class App {
     
@@ -38,9 +42,12 @@ class App {
 
     private initRoutes() {
         this.app.use("/api/auth", authRoutes);
-        this.app.use("/api/shop", shopRoutes)
-        //this.app.use("/api/user", userRoutes);
-    }   
+        this.app.use("/api/user", userRoutes);
+        this.app.use("/api/shop", shopRoutes);
+        this.app.use("/api/inventory", inventoryRoutes);
+        this.app.use("/api/garden", gardenRoutes);
+        this.app.use("/api/pokemon", pokemonRoutes)
+    }
 
     private initStaticFiles() {
         this.app.use('/static', express.static(path.join(absPath(import.meta.url), '../public')))

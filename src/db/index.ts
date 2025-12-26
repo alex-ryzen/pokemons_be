@@ -25,7 +25,7 @@ export const sequelize = new Sequelize({
     username: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD || '',
     logging: false,
-});
+}); 
 
 export async function db_connect() {
     try {
@@ -52,7 +52,7 @@ GrowingBerry.initialize(sequelize);
 ItemCard.initialize(sequelize);
 ShopProduct.initialize(sequelize);
 
-User.hasOne(Player, { foreignKey: 'user_id', onDelete: 'CASCADE'});
+User.hasOne(Player, { as: "player", foreignKey: 'user_id', onDelete: 'CASCADE' });
 Token.belongsTo(User, { foreignKey: 'user_id' });
 Pokemon.hasMany(PlayersPokemon, { foreignKey: 'pokemon_id' });
 PlayersPokemon.belongsTo(Pokemon, { foreignKey: 'pokemon_id' });
@@ -60,7 +60,7 @@ PlayersPokemon.belongsTo(Player, { foreignKey: 'player_id' });
 Player.belongsTo(User, { foreignKey: 'user_id' });
 Player.hasMany(PlayersPokemon, { foreignKey: 'player_id' });
 Player.hasMany(InventoryItem, { foreignKey: 'player_id' });
-Player.hasOne(Garden, { foreignKey: 'player_id' });
+Player.hasOne(Garden, { foreignKey: 'player_id', onDelete: 'CASCADE' });
 
 InventoryItem.belongsTo(Player, { foreignKey: 'player_id' });
 InventoryItem.belongsTo(Berry, { foreignKey: 'item_id', constraints: false})

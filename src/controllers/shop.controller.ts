@@ -20,6 +20,21 @@ class ShopController {
             next(e)
         }
     }
+    static async purchaseItem(req: Request, res: Response, next: NextFunction) {
+        try {
+            const a = 0
+            return res.send()
+        } catch (e) {
+            next(e)
+        }
+    }
+    static async some(req: Request, res: Response, next: NextFunction) {
+        try {
+            return res.send()
+        } catch (e) {
+            next(e)
+        }
+    }
 }
 
 export default ShopController;

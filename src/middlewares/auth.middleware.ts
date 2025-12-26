@@ -1,8 +1,6 @@
-import authConfig from "../config/auth.config";
 import { ApiError } from "../errors/ApiError";
 import authService from "../services/auth-service";
 import { type NextFunction, type Request, type Response } from "express";
-import jwt from "jsonwebtoken";
 
 export interface DTO { // DecodedToken
     username: string,
@@ -28,11 +26,10 @@ class AuthMiddleware {
                     throw ApiError.Unauthorized();
                 }
                 req.user = userData
-                next()
             }
             next();
         } catch (error) {
-            throw ApiError.Unauthorized();
+            next(error)
         }
     };
 }

@@ -28,7 +28,7 @@ class AuthRouter extends BaseRouter {
             },
             {
                 // logout
-                method: RouteMethods.post,
+                method: RouteMethods.delete,
                 path: "/logout",
                 middlewares: [
                     AuthMiddleware.authenticate // check if user is logged in
@@ -38,7 +38,7 @@ class AuthRouter extends BaseRouter {
 
             {
                 // refresh token
-                method: RouteMethods.post,
+                method: RouteMethods.patch,
                 path: "/refresh-token",
                 middlewares: [],
                 handler: AuthController.refresh

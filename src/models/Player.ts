@@ -13,6 +13,7 @@ export interface PlayerAttributes {
     individual_factor?: string;
     inventory_size?: number;
     inv_ext_price?: string;
+    last_seen_at?: Date;
 }
 
 export interface PlayerCreationAttributes extends Optional<PlayerAttributes, 'id'> { }
@@ -25,6 +26,7 @@ export class Player extends Model<PlayerAttributes, PlayerCreationAttributes> im
     declare individual_factor?: string;
     declare inventory_size?: number;
     declare inv_ext_price?: string;
+    declare last_seen_at?: Date;
 
     declare readonly createdAt: Date;
     declare readonly updatedAt: Date;
@@ -78,6 +80,11 @@ export class Player extends Model<PlayerAttributes, PlayerCreationAttributes> im
                     type: DataTypes.DECIMAL(14, 2),
                     allowNull: true,
                 },
+                last_seen_at: {
+                    type: DataTypes.DATE,
+                    defaultValue: DataTypes.NOW,
+                    allowNull: true,
+                }
             },
             {
                 sequelize,

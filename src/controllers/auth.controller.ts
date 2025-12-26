@@ -1,10 +1,8 @@
 import { type NextFunction, type Request, type Response } from "express";
 import authSchema from "../validations/auth.schema";
-import bcrypt from "bcrypt";
 import { z } from "zod";
-import jwt from "jsonwebtoken";
-import authConfig from "../config/auth.config";
 import AuthService from "../services/auth-service";
+import ms from "ms"
 
 export type LoginDataType = z.infer<typeof authSchema.login>
 export type RegisterDataType = z.infer<typeof authSchema.register>
@@ -13,15 +11,15 @@ class AuthController {
     static login = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const data: LoginDataType = {body: req.body};
-            const {username, accessToken, refreshToken} = await AuthService.login(data)
+            const {username, accessToken, refreshToken, refresh_expires_in} = await AuthService.login(data)
             
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
-                maxAge: 24 * 60 * 60 * 1000,  // 24 hours is mileseconds
+                maxAge: ms(process.env.REFRESH_EXPIRES_IN as ms.StringValue),
                 sameSite: "strict"
             });
-            return res.send({message: `Hello again, ${username}`, token: accessToken})
+            return res.send({message: `Hello again, ${username}`, accessToken: accessToken})
         } catch (e) {
             next(e)
         }
@@ -34,10 +32,10 @@ class AuthController {
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
-                maxAge: 24 * 60 * 60 * 1000,  // 24 hours is mileseconds
+                maxAge: 24 * 60 * 60 * 1000,
                 sameSite: "strict"
             });
-            return res.send({message: `Welcome, ${username}`, token: accessToken})
+            return res.send({message: `Welcome, ${username}`, accessToken: accessToken})
         } catch (e) {
             next(e);
         }
@@ -45,10 +43,10 @@ class AuthController {
 
     static logout = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const {refreshToken} = req.cookies.refresh_token;
-            const token = await AuthService.logout(refreshToken);
+            const {refreshToken} = req.cookies;
+            const tokenIsDeleted = await AuthService.logout(refreshToken);
             res.clearCookie('refreshToken');
-            return res.send("bye-bye ;3");
+            return res.send(`bye-bye ;3   (${tokenIsDeleted})`);
         } catch (e) {
             next(e);
         }
@@ -56,9 +54,9 @@ class AuthController {
 
     static refresh = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const {refreshToken} = req.cookies.refresh_token;
-            const {accessToken} = await AuthService.refresh(refreshToken);
-            return res.json(accessToken);
+            const { refreshToken } = req.cookies;
+            const { accessToken } = await AuthService.refresh(refreshToken);
+            return res.json({accessToken: accessToken});
         } catch (e) {
             next(e);
         }
