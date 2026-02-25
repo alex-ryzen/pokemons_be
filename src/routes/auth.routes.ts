@@ -39,7 +39,7 @@ class AuthRouter extends BaseRouter {
             {
                 // refresh token
                 method: RouteMethods.patch,
-                path: "/refresh-token",
+                path: "/refreshToken",
                 middlewares: [],
                 handler: AuthController.refresh
             },

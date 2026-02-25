@@ -19,7 +19,7 @@ class AuthService {
             where: {
                 [Op.or]: [{ email: login}, { username: login }]
             },
-            include: Player,
+            include: {model: Player, as: 'player'},
         })
         if (!user) {
             throw new ApiError(401, "Invalid credentials")
@@ -50,9 +50,16 @@ class AuthService {
 
     async registration(data: RegisterDataType) {
         const { body: { username, email, password } } = data
-        const duplicate = await User.findOne({ where: { email } })
+        const duplicate = await User.findOne({ 
+            where: {
+                [Op.or]: [
+                    { email: email },
+                    { username: username }
+                ]
+            }
+        })
         if (duplicate) {
-            throw ApiError.BadRequest(`Пользователь с почтовым адресом ${email} уже существует`)
+            throw ApiError.BadRequest(`Пользователь с таким логином или почтовым адресом уже существует!`)
         }
 
         const hashPassword = await bcrypt.hash(password, 12);

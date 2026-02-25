@@ -17,11 +17,12 @@ class AuthMiddleware {
         try {
             // Extract the access token from the HttpOnly cookie or "Authorization" header as "Bearer <token>"
             const token: string = req.cookies.accessToken || req.headers.authorization?.split(' ')[1];
-            if (!token || (req.headers.authorization?.split(' ')[0] != "Bearer")) {
+            if (!token || (req.headers.authorization?.split(' ')[0] !== "Bearer")) {
                 throw ApiError.Unauthorized();
             }
             else {
                 const userData = authService.validateAccessToken(token)
+                console.log(userData)
                 if (!userData) {
                     throw ApiError.Unauthorized();
                 }

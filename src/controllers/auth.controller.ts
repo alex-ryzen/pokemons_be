@@ -32,7 +32,7 @@ class AuthController {
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
-                maxAge: 24 * 60 * 60 * 1000,
+                maxAge: ms(process.env.REFRESH_EXPIRES_IN as ms.StringValue),
                 sameSite: "strict"
             });
             return res.send({message: `Welcome, ${username}`, accessToken: accessToken})
